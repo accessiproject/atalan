@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Answer;
+use App\Entity\Assistive;
 use App\Entity\Proposition;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
@@ -39,6 +40,7 @@ class AnswerType extends AbstractType
             $choices[$wording] = $wording;
         }
 
+        
 
         $builder
             ->add('comment', TextareaType::class, [
@@ -52,7 +54,8 @@ class AnswerType extends AbstractType
             ->add('accept', CheckboxType::class, [
                 'label' => 'J\'accepte de partager mes données techniques à la Société Atalan.',
             ]);
-        if ($param == "false") {
+        if ($param == "false") {    
+            
             $builder->add('propositions', ChoiceType::class, array(
                 'choices' => $choices,
                 'expanded' => true,
@@ -71,7 +74,6 @@ class AnswerType extends AbstractType
                 'choice_label' => 'wording',
             ]);
         }    
-        //$builder->add('assistives');
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -81,11 +83,6 @@ class AnswerType extends AbstractType
             'survey' => null,
             'multiple' => null,
             'propositions' => null,
-            'empty_data' => function (FormInterface $form) {
-                return new Money(
-                    $form->get('propositions')->getData()
-                );
-            },
         ]);
     }
 }

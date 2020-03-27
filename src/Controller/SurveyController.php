@@ -15,11 +15,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Omines\DataTablesBundle\Adapter\ArrayAdapter;
+use Omines\DataTablesBundle\Column\TextColumn;
+use Omines\DataTablesBundle\DataTableFactory;
 
 /**
-* @IsGranted("ROLE_ADMIN")
-*/
+ * @IsGranted("ROLE_ADMIN")
+ */
 class SurveyController extends AbstractController
 {
     /**
@@ -40,17 +42,17 @@ class SurveyController extends AbstractController
      */
     public function survey_edit($id, Request $request, EntityManagerInterface $manager)
     {
-        
+
         if ($id > 0)
             $survey = $manager->getRepository(Survey::class)->find($id);
         else
             $survey = new Survey();
-        
+
         $proposition = new Proposition();
         $technicalComponent = new TechnicalComponent();
         $survey->getPropositions()->add($proposition);
         $survey->getTechnicalComponents()->add($technicalComponent);
-        
+
         $form = $this->createForm(SurveyType::class, $survey);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -62,7 +64,7 @@ class SurveyController extends AbstractController
             // Enregistre le sondage en base
             $manager->persist($survey);
             $manager->flush();
-            
+
             return $this->redirectToRoute('survey_list');
         }
         return $this->render('survey/edit.html.twig', [
@@ -70,7 +72,7 @@ class SurveyController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
+
     /**
      * @Route("/consultation/{id}", name="survey_show")
      */
@@ -88,14 +90,14 @@ class SurveyController extends AbstractController
             $answer->setSurvey($survey);
             $answer->setCreatedat(new \DateTime('now'));
             $answer->setAcceptedat(new \DateTime('now'));
-            foreach($form["propositions"]->getData() as $proposition) {
+            foreach ($form["propositions"]->getData() as $proposition) {
                 $answer->addProposition($proposition);
             }
             $manager->persist($answer);
             $manager->flush();
             return $this->redirectToRoute('survey_list');
         }
-            return $this->render('survey/show.html.twig', [
+        return $this->render('survey/show.html.twig', [
             'controller_name' => 'SurveyController',
             'form' => $form->createView(),
             'survey' => $survey,
@@ -109,7 +111,7 @@ class SurveyController extends AbstractController
     {
         $survey = $manager->getRepository(Survey::class)->find($id);
         $manager->remove($survey);
-        $manager->flush();    
+        $manager->flush();
         return $this->redirectToRoute('survey_list', [
             'id' => $survey->getId(),
         ]);
@@ -118,13 +120,14 @@ class SurveyController extends AbstractController
     /**
      * @Route("/result/{id}", name="survey_result")
      */
-    public function survey_result($id)
+    public function survey_result($id, Request $request, DataTableFactory $dataTableFactory)
     {
         $survey = $this->getDoctrine()->getRepository(Survey::class)->find($id);
+        $test = $this->getDoctrine()->getRepository(Answer::class)->findByAnswer($id,"email");
         return $this->render('survey/result.html.twig', [
             'controller_name' => 'SurveyController',
             'survey' => $survey,
+            'test' => $test,
         ]);
     }
-
 }

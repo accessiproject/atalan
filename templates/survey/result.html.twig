@@ -24,4 +24,36 @@
             </tr>
         {% endfor %}
     </table>
+    <hr>
+    <table id="idresult">
+        <thead>
+            <th>Proposition</th>
+            <th>Navigateur</th>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <button type="button" onclick="go()">Jouer</button>
+    <ol>
+    {% for tes in test %}
+        <li>{{ tes.email }}</li>
+    {% endfor %}
+    </ol>
+    <script>
+    
+    function go() {
+        let tabth = idresult.getElementsByTagName("th");
+        let th = [];
+        for (let i=0;i<tabth.length;i++) {
+            th.push(tabth[i].textContent);
+            let select = document.createElement("select");
+            select.id="id" + tabth[i].textContent;
+            tabth[i].textContent="";
+            tabth[i].appendChild(select);
+        }
+
+        
+    }
+
+    </script>
 {% endblock %}

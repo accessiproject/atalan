@@ -18,7 +18,18 @@ class AnswerRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Answer::class);
     }
-
+/*
+    public function findByAnswer($survey,$param)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.survey = :survey')
+            ->setParameter('survey', $survey)
+            ->groupBy('a.param', )
+            ->setParameter('a.param', $param)
+            ->getQuery()
+            ->getResult();
+    }
+*/
     // /**
     //  * @return Answer[] Returns an array of Answer objects
     //  */
